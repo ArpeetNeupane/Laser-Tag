@@ -1,0 +1,245 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+}
+
+.battle-arena {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
+
+.team {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+}
+
+.team-1 {
+    background: linear-gradient(45deg, rgba(255, 51, 102, 0.1), rgba(255, 0, 64, 0.05));
+    border-right: 2px solid rgba(255, 51, 102, 0.3);
+}
+
+.team-2 {
+    background: linear-gradient(45deg, rgba(51, 153, 255, 0.1), rgba(0, 123, 255, 0.05));
+    border-left: 2px solid rgba(51, 153, 255, 0.3);
+}
+
+.team-header {
+    position: absolute;
+    top: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px currentColor;
+}
+
+.team-1 .team-header {
+    color: #ff3366;
+}
+
+.team-2 .team-header {
+    color: #3399ff;
+}
+
+.players-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 4rem;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.player-icon {
+    font-size: 4rem;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 10px currentColor);
+    cursor: pointer;
+}
+
+.team-1 .player-icon {
+    color: #ff3366;
+}
+
+.team-2 .player-icon {
+    color: #3399ff;
+}
+
+.player-icon:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 20px currentColor);
+}
+
+.player-info {
+    text-align: center;
+}
+
+.player-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.hp-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hp-bar {
+    width: 100px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.hp-fill {
+    height: 100%;
+    transition: width 0.5s ease, background-color 0.3s ease;
+    border-radius: 3px;
+}
+
+.team-1 .hp-fill {
+    background: linear-gradient(90deg, #ff3366, #ff6699);
+}
+
+.team-2 .hp-fill {
+    background: linear-gradient(90deg, #3399ff, #66b3ff);
+}
+
+.hp-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    min-width: 40px;
+}
+
+/* HP-based styling */
+.player.critical .player-icon {
+    animation: pulse 1s infinite;
+    filter: drop-shadow(0 0 15px #ff0000);
+}
+
+.player.dead .player-icon {
+    opacity: 0.3;
+    transform: scale(0.8);
+    filter: grayscale(100%);
+    animation: death 0.5s ease-out;
+}
+
+.player.damaged .player-icon {
+    animation: damage 0.3s ease-out;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes damage {
+    0% { transform: scale(1); }
+    25% { transform: scale(0.95) rotate(-2deg); }
+    75% { transform: scale(1.05) rotate(2deg); }
+    100% { transform: scale(1); }
+}
+
+@keyframes death {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(0.8) rotate(180deg); opacity: 0.3; }
+}
+
+/* Center divider */
+.center-divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #ff3366 0%, #8b5cf6 50%, #3399ff 100%);
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+/* Battle status */
+.battle-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    z-index: 10;
+}
+
+.battle-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    text-shadow: 0 0 10px #8b5cf6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .battle-arena {
+        flex-direction: column;
+    }
+    
+    .team {
+        flex: none;
+        height: 50vh;
+        padding: 1rem;
+    }
+    
+    .players-container {
+        flex-direction: row;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .center-divider {
+        left: 0;
+        right: 0;
+        top: 50%;
+        bottom: auto;
+        width: auto;
+        height: 4px;
+        transform: translateY(-50%);
+    }
+    
+    .team-1 {
+        border-right: none;
+        border-bottom: 2px solid rgba(255, 51, 102, 0.3);
+    }
+    
+    .team-2 {
+        border-left: none;
+        border-top: 2px solid rgba(51, 153, 255, 0.3);
+    }
+}
