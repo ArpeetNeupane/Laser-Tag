@@ -108,5 +108,14 @@ class MQTTService:
         else:
             logger.warning("MQTT client not initialized. Cannot publish gun control.")
 
+    def publish_reset_command(self):
+        if self.client:
+            topic = "control/reset"
+            payload = json.dumps({"status": "reset"})
+            self.client.publish(topic, payload)
+            logger.info("Published reset command to hardware")
+        else:
+            logger.warning("MQTT client not initialized. Cannot publish reset command.")
+
 # Global instance
 mqtt_service = MQTTService()

@@ -15,13 +15,16 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
-            if data["type"] == "gun_control":
+            message_type = data.get("type")
+
+            if message_type == "gun_control":
                 player_id = int(data["player_id"])
                 enabled = bool(data["enabled"])
                 
-                # Publish to MQTT
+                #publishing gun control status to mqtt
                 mqtt_service.publish_gun_control(player_id, enabled)
                 
+                #sending update to frontend
                 await self.channel_layer.group_send(
                     "game_updates",
                     {
@@ -33,7 +36,22 @@ class GameConsumer(AsyncWebsocketConsumer):
                         }
                     }
                 )
-        
+
+            elif message_type == "reset":
+                #publishing reset signal to mqtt
+                mqtt_service.publish("game/reset", json.dumps({"reset": True}))
+                
+                #sending reset event to frontend
+                await self.channel_layer.group_send(
+                    "game_updates",
+                    {
+                        "type": "game_update",
+                        "data": {
+                            "type": "reset"
+                        }
+                    }
+                )
+
         except Exception as e:
             print(f"Error in WebSocket receive: {e}")
 
