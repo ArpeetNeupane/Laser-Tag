@@ -99,5 +99,14 @@ class MQTTService:
             self.client.disconnect()
             logger.info("MQTT service stopped")
 
+    def publish_gun_control(self, player_id, enabled):
+        if self.client:
+            topic = f"control/gun/{player_id}"
+            payload = json.dumps({"enabled": enabled})
+            self.client.publish(topic, payload)
+            logger.info(f"Published gun control to hardware: Player {player_id} - {'ENABLED' if enabled else 'DISABLED'}")
+        else:
+            logger.warning("MQTT client not initialized. Cannot publish gun control.")
+
 # Global instance
 mqtt_service = MQTTService()

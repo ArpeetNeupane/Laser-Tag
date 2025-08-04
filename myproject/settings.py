@@ -144,3 +144,17 @@ MQTT_BROKER_PORT = config('MQTT_BROKER_PORT', default=1883, cast=int)
 MQTT_USERNAME = config('MQTT_USERNAME', default=None)
 MQTT_PASSWORD = config('MQTT_PASSWORD', default=None)
 ENABLE_MQTT = config('ENABLE_MQTT', default=False, cast=bool)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
