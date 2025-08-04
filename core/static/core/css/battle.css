@@ -57,9 +57,9 @@ body {
 }
 
 .players-container {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
     margin-top: 4rem;
 }
 
@@ -67,7 +67,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 2rem;
     transition: all 0.3s ease;
 }
 
@@ -104,39 +104,39 @@ body {
 .hp-container {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.3rem;
 }
 
-.hp-bar {
-    width: 100px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.heart {
+    font-size: 1.5rem;
+    transition: all 0.4s ease;
+    filter: drop-shadow(0 0 5px currentColor);
 }
 
-.hp-fill {
-    height: 100%;
-    transition: width 0.5s ease, background-color 0.3s ease;
-    border-radius: 3px;
+.team-1 .heart {
+    color: #ff3366;
 }
 
-.team-1 .hp-fill {
-    background: linear-gradient(90deg, #ff3366, #ff6699);
+.team-2 .heart {
+    color: #3399ff;
 }
 
-.team-2 .hp-fill {
-    background: linear-gradient(90deg, #3399ff, #66b3ff);
+.heart.lost {
+    opacity: 0.2;
+    transform: scale(0.8);
+    filter: grayscale(100%);
 }
 
-.hp-text {
-    font-size: 0.9rem;
-    font-weight: bold;
-    min-width: 40px;
+.heart.healing {
+    animation: heartHeal 0.6s ease-out;
 }
 
-/* HP-based styling */
+.heart.damage {
+    animation: heartDamage 0.5s ease-out;
+}
+
+/* Player status animations */
 .player.critical .player-icon {
     animation: pulse 1s infinite;
     filter: drop-shadow(0 0 15px #ff0000);
@@ -169,6 +169,22 @@ body {
 @keyframes death {
     0% { transform: scale(1) rotate(0deg); opacity: 1; }
     100% { transform: scale(0.8) rotate(180deg); opacity: 0.3; }
+}
+
+@keyframes heartDamage {
+    0% { transform: scale(1); opacity: 1; }
+    25% { transform: scale(1.3) rotate(-10deg); opacity: 0.8; }
+    50% { transform: scale(0.8) rotate(10deg); opacity: 0.6; }
+    75% { transform: scale(1.1); opacity: 0.4; }
+    100% { transform: scale(0.8); opacity: 0.2; }
+}
+
+@keyframes heartHeal {
+    0% { transform: scale(0.8); opacity: 0.2; }
+    25% { transform: scale(1.4) rotate(10deg); }
+    50% { transform: scale(0.9) rotate(-10deg); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 /* Center divider */
@@ -205,6 +221,8 @@ body {
     text-shadow: 0 0 10px #8b5cf6;
 }
 
+
+
 /* Responsive design */
 @media (max-width: 768px) {
     .battle-arena {
@@ -218,7 +236,7 @@ body {
     }
     
     .players-container {
-        flex-direction: row;
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
         margin-top: 2rem;
     }
