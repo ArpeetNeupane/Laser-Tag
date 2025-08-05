@@ -140,7 +140,7 @@ function resetGameAndGuns() {
             socket.send(JSON.stringify({
                 type: 'reset_game'
             }));
-            console.log('📤 Reset command sent to backend');
+            console.log('📤 Reset command sent to backend - this should trigger hardware reset on topic command/reset');
         } catch (error) {
             console.error('❌ Error sending reset command:', error);
         }
@@ -264,9 +264,26 @@ function showConnectionError() {
     }
 }
 
+// Message deduplication
+let lastMessages = {};
+
 // Handle game updates from MQTT
 function handleGameUpdate(data) {
     console.log('Game update received:', data);
+    
+    // Create message key for deduplication
+    const messageKey = `${data.type}_${data.player_id || 'global'}_${Date.now()}`;
+    const currentTime = Date.now();
+    
+    // Check for duplicate messages within 500ms
+    if (data.type === 'damage' || data.type === 'heal') {
+        const duplicateKey = `${data.type}_${data.player_id}`;
+        if (lastMessages[duplicateKey] && currentTime - lastMessages[duplicateKey] < 500) {
+            console.warn(`Ignoring duplicate ${data.type} message for player ${data.player_id}`);
+            return;
+        }
+        lastMessages[duplicateKey] = currentTime;
+    }
     
     switch(data.type) {
         case 'damage':

@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from core.mqtt_service import mqtt_service
 
+
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add("game_updates", self.channel_name)
@@ -20,11 +21,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             if message_type == "gun_control":
                 player_id = int(data["player_id"])
                 enabled = bool(data["enabled"])
-                
-                #publishing gun control status to mqtt
+
+                # publishing gun control status to mqtt
                 mqtt_service.publish_gun_control(player_id, enabled)
-                
-                #sending update to frontend
+
+                # sending update to frontend
                 await self.channel_layer.group_send(
                     "game_updates",
                     {
@@ -32,29 +33,27 @@ class GameConsumer(AsyncWebsocketConsumer):
                         "data": {
                             "type": "gun_control",
                             "player_id": player_id,
-                            "enabled": enabled
-                        }
-                    }
+                            "enabled": enabled,
+                        },
+                    },
                 )
 
-            elif message_type == "reset":
-                #publishing reset signal to mqtt
-                mqtt_service.publish("game/reset", json.dumps({"reset": True}))
-                
-                #sending reset event to frontend
+            elif message_type == "reset" or message_type == "reset_game":
+                print(f"Reset request received via WebSocket: {message_type}")
+
+                # publishing reset signal to mqtt
+                mqtt_service.publish_reset_command()
+
+                # sending reset event to frontend
                 await self.channel_layer.group_send(
-                    "game_updates",
-                    {
-                        "type": "game_update",
-                        "data": {
-                            "type": "reset"
-                        }
-                    }
+                    "game_updates", {"type": "game_update", "data": {"type": "reset"}}
                 )
+
+                print("Reset command processed and sent to hardware and frontend")
 
         except Exception as e:
             print(f"Error in WebSocket receive: {e}")
 
     async def game_update(self, event):
         """Handle game updates from MQTT service"""
-        await self.send(text_data=json.dumps(event['data']))
+        await self.send(text_data=json.dumps(event["data"]))

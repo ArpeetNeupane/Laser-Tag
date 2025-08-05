@@ -1,0 +1,40 @@
+services:
+  laser-tag-backend:
+    container_name: laser-tag-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code
+      - static_volume:/code/staticfiles
+    networks:
+      - laser-tag-network
+    ports:
+      - "8015:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: laser-tag-redis
+    networks:
+      - laser-tag-network
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+
+volumes:
+  static_volume:
+  redis_data:
+
+networks:
+  laser-tag-network:
+    driver: bridge
